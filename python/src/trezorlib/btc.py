@@ -191,6 +191,7 @@ def sign_tx(
     details: messages.SignTx = None,
     prev_txes: Dict[bytes, messages.TransactionType] = None,
     preauthorized: bool = False,
+    decred_staking_ticket: bool = False,
     **kwargs: Any,
 ) -> Tuple[Sequence[bytes], bytes]:
     """Sign a Bitcoin-like transaction.
@@ -223,6 +224,7 @@ def sign_tx(
             coin_name=coin_name,
             inputs_count=len(inputs),
             outputs_count=len(outputs),
+            decred_staking_ticket=decred_staking_ticket,
         )
         for name, value in kwargs.items():
             if hasattr(signtx, name):

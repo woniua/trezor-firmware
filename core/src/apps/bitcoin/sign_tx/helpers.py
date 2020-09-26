@@ -58,6 +58,22 @@ class UiConfirmOutput(UiConfirm):
     __eq__ = utils.obj_eq
 
 
+class UiConfirmDecredSSTXSubmission(UiConfirm):
+    def __init__(
+        self, output: TxOutput, coin: CoinInfo, amount_unit: EnumTypeAmountUnit
+    ):
+        self.output = output
+        self.coin = coin
+        self.amount_unit = amount_unit
+
+    def confirm_dialog(self, ctx: wire.Context) -> Awaitable[Any]:
+        return layout.confirm_decred_sstx_submission(
+            ctx, self.output, self.coin, self.amount_unit
+        )
+
+    __eq__ = utils.obj_eq
+
+
 class UiConfirmReplacement(UiConfirm):
     def __init__(self, description: str, txid: bytes):
         self.description = description
@@ -175,6 +191,10 @@ def confirm_output(output: TxOutput, coin: CoinInfo, amount_unit: EnumTypeAmount
     return (yield UiConfirmOutput(output, coin, amount_unit))
 
 
+def confirm_decred_sstx_submission(output: TxOutput, coin: CoinInfo, amount_unit: EnumTypeAmountUnit) -> Awaitable[None]:  # type: ignore
+    return (yield UiConfirmDecredSSTXSubmission(output, coin, amount_unit))
+
+
 def confirm_replacement(description: str, txid: bytes) -> Awaitable[Any]:  # type: ignore
     return (yield UiConfirmReplacement(description, txid))
 
@@ -263,6 +283,15 @@ def request_tx_output(tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: Option
     ack = yield TxAckOutput, tx_req
     _clear_tx_request(tx_req)
     return sanitize_tx_output(ack.tx.output, coin)
+
+
+def request_decred_commitment_output(tx_req: TxRequest, i: int, coin: CoinInfo) -> Awaitable[TxOutput]:  # type: ignore
+    assert tx_req.details is not None
+    tx_req.request_type = TXOUTPUT
+    tx_req.details.request_index = i
+    ack = yield TxAckOutput, tx_req
+    _clear_tx_request(tx_req)
+    return sanitize_decred_commitment_output(ack.tx.output)
 
 
 def request_tx_prev_output(tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: bytes = None) -> Awaitable[PrevOutput]:  # type: ignore
@@ -369,6 +398,22 @@ def sanitize_tx_prev_input(txi: PrevInput, coin: CoinInfo) -> PrevInput:
     if not coin.decred and txi.decred_tree is not None:
         raise wire.DataError("Decred details provided but Decred coin not specified.")
     return txi
+
+
+def sanitize_decred_commitment_output(txo: TxOutput) -> TxOutput:
+    if txo.script_type != OutputScriptType.PAYTOOPRETURN:
+        raise wire.DataError("Invalid script type.")
+
+    if txo.op_return_data is None:
+        raise wire.DataError("OP_RETURN output without op_return_data")
+
+    if txo.amount != 0:
+        raise wire.DataError("OP_RETURN output with non-zero amount")
+
+    if txo.address or txo.multisig:
+        raise wire.DataError("OP_RETURN output with address or multisig")
+
+    return txo
 
 
 def sanitize_tx_output(txo: TxOutput, coin: CoinInfo) -> TxOutput:

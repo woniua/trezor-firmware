@@ -16,3 +16,10 @@ def read_bitcoin_varint(r: BufferReader) -> int:
     else:
         raise ValueError
     return n
+
+
+def read_uint64_le(r: BufferReader) -> int:
+    n = 0
+    for i in range(0, 64, 8):
+        n += r.get() << i
+    return n

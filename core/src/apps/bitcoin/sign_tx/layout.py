@@ -75,6 +75,19 @@ async def confirm_output(
     await require_confirm(ctx, text, ButtonRequestType.ConfirmOutput)
 
 
+async def confirm_decred_sstx_submission(
+    ctx: wire.Context, output: TxOutput, coin: CoinInfo, amount_unit: EnumTypeAmountUnit
+) -> None:
+    address = output.address
+    assert address is not None
+    address_short = addresses.address_short(coin, address)
+    text = Text("Purchase ticket", ui.ICON_SEND, ui.GREEN)
+    text.normal(format_coin_amount(output.amount, coin, amount_unit))
+    text.normal("with voting rights to")
+    text.mono(*split_address(address_short))
+    await require_confirm(ctx, text, ButtonRequestType.ConfirmOutput)
+
+
 async def confirm_replacement(ctx: wire.Context, description: str, txid: bytes) -> None:
     text = Text(description, ui.ICON_SEND, ui.GREEN)
     text.normal("Confirm transaction ID:")
