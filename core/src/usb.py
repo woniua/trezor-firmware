@@ -36,9 +36,9 @@ iface_wire = io.WebUSB(
 # Therefore, each of the following needs to include the respective static expression
 # so that it can be correctly excluded from the resulting build.
 
+id_debug = next(_iface_iter)
 if __debug__ and ENABLE_IFACE_DEBUG:
     # interface used for debug messages with trezor wire protocol
-    id_debug = next(_iface_iter)
     iface_debug = io.WebUSB(
         iface_num=id_debug,
         ep_in=0x81 + id_debug,
