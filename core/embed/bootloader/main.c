@@ -72,6 +72,7 @@ static void usb_init_all(secbool usb21_landing) {
       .iface_num = USB_IFACE_NUM,
       .ep_in = USB_EP_DIR_IN | 0x01,
       .ep_out = USB_EP_DIR_OUT | 0x01,
+      .emu_port = 0,
       .subclass = 0,
       .protocol = 0,
       .max_packet_len = sizeof(rx_buffer),

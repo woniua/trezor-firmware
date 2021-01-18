@@ -34,6 +34,7 @@ typedef struct {
   uint8_t iface_num;   // Address of this WebUSB interface
   uint8_t ep_in;       // Address of IN endpoint (with the highest bit set)
   uint8_t ep_out;      // Address of OUT endpoint
+  uint16_t emu_port;   // UDP port of this interface in the emulator.
   uint8_t subclass;    // usb_iface_subclass_t
   uint8_t protocol;    // usb_iface_protocol_t
   uint8_t polling_interval;  // In units of 1ms
