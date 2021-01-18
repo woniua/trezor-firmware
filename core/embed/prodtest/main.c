@@ -127,7 +127,6 @@ static void usb_init_all(void) {
       .ep_cmd = 0x82,
       .ep_in = 0x81,
       .ep_out = 0x01,
-      .emu_port = 0,
       .polling_interval = 10,
       .max_packet_len = VCP_PACKET_LEN,
   };

@@ -98,10 +98,13 @@ STATIC mp_obj_t mod_trezorio_VCP_make_new(const mp_obj_type_t *type,
   o->info.rx_intr_byte = 3;  // Ctrl-C
   o->info.iface_num = (uint8_t)(iface_num);
   o->info.data_iface_num = (uint8_t)(data_iface_num);
+#ifdef TREZOR_EMULATOR
+  o->info.emu_port = (uint16_t)(emu_port);
+#else
   o->info.ep_cmd = (uint8_t)(ep_cmd);
   o->info.ep_in = (uint8_t)(ep_in);
   o->info.ep_out = (uint8_t)(ep_out);
-  o->info.emu_port = (uint16_t)(emu_port);
+#endif
   o->info.polling_interval = 10;
   o->info.max_packet_len = (uint8_t)(vcp_packet_len);
 

@@ -100,9 +100,12 @@ STATIC mp_obj_t mod_trezorio_HID_make_new(const mp_obj_type_t *type,
   o->info.rx_buffer = m_new(uint8_t, max_packet_len);
   o->info.report_desc = report_desc.buf;
   o->info.iface_num = (uint8_t)(iface_num);
+#ifdef TREZOR_EMULATOR
+  o->info.emu_port = (uint16_t)(emu_port);
+#else
   o->info.ep_in = (uint8_t)(ep_in);
   o->info.ep_out = (uint8_t)(ep_out);
-  o->info.emu_port = (uint16_t)(emu_port);
+#endif
   o->info.subclass = (uint8_t)(subclass);
   o->info.protocol = (uint8_t)(protocol);
   o->info.polling_interval = (uint8_t)(polling_interval);
