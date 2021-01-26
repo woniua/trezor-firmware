@@ -270,4 +270,6 @@ def boot() -> None:
 
     wire.experimental_enabled = storage.device.get_experimental_features()
 
-    workflow.idle_timer.set(storage.device.get_autolock_delay_ms(), lock_device_if_unlocked)
+    workflow.idle_timer.set(
+        storage.device.get_autolock_delay_ms(), lock_device_if_unlocked
+    )

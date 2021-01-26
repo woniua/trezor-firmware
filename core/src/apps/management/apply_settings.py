@@ -101,7 +101,9 @@ async def apply_settings(ctx: wire.Context, msg: ApplySettings):
 
 
 def reload_settings_from_storage() -> None:
-    workflow.idle_timer.set(storage.device.get_autolock_delay_ms(), lock_device_if_unlocked)
+    workflow.idle_timer.set(
+        storage.device.get_autolock_delay_ms(), lock_device_if_unlocked
+    )
     ui.display.orientation(storage.device.get_rotation())
     wire.experimental_enabled = storage.device.get_experimental_features()
 
