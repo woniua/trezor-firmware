@@ -27,7 +27,7 @@ class Homescreen(HomescreenBase):
         if not storage.device.is_initialized():
             self.label = "Go to trezor.io/start"
 
-        self.loader = Loader(style=LoaderNeutral, target_ms=5000, offset_y=-10)
+        self.loader = Loader(style=LoaderNeutral, target_ms=2500, offset_y=-10)
         self.touch_ms: Optional[int] = None
 
     def on_render(self) -> None:
