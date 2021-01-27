@@ -44,6 +44,7 @@ if False:
 
 _TARGET_MS = const(1000)
 _OFFSET_Y = const(-24)
+_REVERSE_SPEEDUP = const(2)
 
 
 class Loader(ui.Component):
@@ -52,6 +53,7 @@ class Loader(ui.Component):
         style: LoaderStyleType = LoaderDefault,
         target_ms: int = _TARGET_MS,
         offset_y: int = _OFFSET_Y,
+        reverse_speedup: int = _REVERSE_SPEEDUP,
     ) -> None:
         super().__init__()
         self.normal_style = style.normal
@@ -60,6 +62,7 @@ class Loader(ui.Component):
         self.start_ms: Optional[int] = None
         self.stop_ms: Optional[int] = None
         self.offset_y = offset_y
+        self.reverse_speedup = reverse_speedup
 
     def start(self, start_time: int = 0) -> None:
         if self.start_ms is not None and self.stop_ms is not None:
@@ -79,7 +82,7 @@ class Loader(ui.Component):
         if start is None:
             return 0
         elif stop is not None:
-            return max(stop - start + (stop - now) * 2, 0)
+            return max(stop - start + (stop - now) * self.reverse_speedup, 0)
         else:
             return min(now - start, self.target_ms)
 
