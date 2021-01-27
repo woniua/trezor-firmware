@@ -62,7 +62,10 @@ class Loader(ui.Component):
         self.offset_y = offset_y
 
     def start(self, start_time: int = 0) -> None:
-        self.start_ms = utime.ticks_ms() - start_time
+        if self.start_ms is not None and self.stop_ms is not None:
+            self.start_ms = utime.ticks_ms() - self.elapsed_ms()
+        else:
+            self.start_ms = utime.ticks_ms() - start_time
         self.stop_ms = None
         self.on_start()
 
@@ -70,27 +73,27 @@ class Loader(ui.Component):
         self.stop_ms = utime.ticks_ms()
 
     def elapsed_ms(self) -> int:
-        if self.start_ms is None:
-            return 0
-        return utime.ticks_ms() - self.start_ms
-
-    def on_render(self) -> None:
-        target = self.target_ms
         start = self.start_ms
         stop = self.stop_ms
-        if start is None:
-            return
         now = utime.ticks_ms()
-        if stop is None:
-            r = min(now - start, target)
+        if start is None:
+            return 0
+        elif stop is not None:
+            return max(stop - start + (stop - now) * 2, 0)
         else:
-            r = max(stop - start + (stop - now) * 2, 0)
+            return min(now - start, self.target_ms)
+
+    def on_render(self) -> None:
+        if self.start_ms is None:
+            return
+        target = self.target_ms
+        r = self.elapsed_ms()
         if r != target:
             s = self.normal_style
         else:
             s = self.active_style
 
-        progress = r * 1000 // target
+        progress = r * 1000 // target  # scale to 0-1000
         if s.icon is None:
             display.loader(progress, False, self.offset_y, s.fg_color, s.bg_color)
         else:
