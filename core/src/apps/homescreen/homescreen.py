@@ -55,7 +55,9 @@ class Homescreen(HomescreenBase):
         self.repaint = False
 
     def on_touch_start(self, _x: int, _y: int) -> None:
-        if config.has_pin():
+        if self.loader.start_ms is not None:
+            self.loader.start()
+        elif config.has_pin():
             self.touch_ms = utime.ticks_ms()
 
     def on_touch_end(self, _x: int, _y: int) -> None:
