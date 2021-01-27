@@ -47,7 +47,7 @@ def test_hold_to_lock(device_handler):
     assert device_handler.features().unlocked is True
 
     # lock
-    hold(5500)
+    hold(3500)
     assert device_handler.features().unlocked is False
 
     # unlock by touching
@@ -58,5 +58,5 @@ def test_hold_to_lock(device_handler):
     assert device_handler.features().unlocked is True
 
     # lock
-    hold(5500)
+    hold(3500)
     assert device_handler.features().unlocked is False
