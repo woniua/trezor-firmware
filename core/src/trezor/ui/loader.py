@@ -64,11 +64,11 @@ class Loader(ui.Component):
         self.offset_y = offset_y
         self.reverse_speedup = reverse_speedup
 
-    def start(self, start_time: int = 0) -> None:
+    def start(self) -> None:
         if self.start_ms is not None and self.stop_ms is not None:
             self.start_ms = utime.ticks_ms() - self.elapsed_ms()
         else:
-            self.start_ms = utime.ticks_ms() - start_time
+            self.start_ms = utime.ticks_ms()
         self.stop_ms = None
         self.on_start()
 

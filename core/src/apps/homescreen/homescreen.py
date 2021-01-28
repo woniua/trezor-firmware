@@ -14,6 +14,7 @@ if False:
     from typing import Optional
 
 _LOADER_DELAY_MS = const(500)
+_LOADER_TOTAL_MS = const(2500)
 
 
 async def homescreen() -> None:
@@ -28,7 +29,10 @@ class Homescreen(HomescreenBase):
             self.label = "Go to trezor.io/start"
 
         self.loader = Loader(
-            style=LoaderNeutral, target_ms=2500, offset_y=-10, reverse_speedup=3
+            style=LoaderNeutral,
+            target_ms=_LOADER_TOTAL_MS - _LOADER_DELAY_MS,
+            offset_y=-10,
+            reverse_speedup=3,
         )
         self.touch_ms: Optional[int] = None
 
@@ -75,7 +79,7 @@ class Homescreen(HomescreenBase):
     def _loader_start(self) -> None:
         ui.display.clear()
         ui.display.text_center(ui.WIDTH // 2, 35, "Hold to lock", ui.BOLD, ui.FG, ui.BG)
-        self.loader.start(_LOADER_DELAY_MS)
+        self.loader.start()
 
     def dispatch(self, event: int, x: int, y: int) -> None:
         if (
