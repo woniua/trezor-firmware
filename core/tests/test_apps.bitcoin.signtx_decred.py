@@ -102,7 +102,9 @@ class TestSignTxDecred(unittest.TestCase):
             TxRequest(
                 request_type=TXOUTPUT,
                 details=TxRequestDetailsType(request_index=0, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("4ac247307a054c37525169a78d690a7a7f87d709bef7d722aae85584f59c8fdf0000000000ffffffff01")
+                ),
             ),
             TxAckOutput(tx=TxAckOutputWrapper(output=out1)),
             helpers.UiConfirmOutput(out1, coin_decred, AmountUnit.BITCOIN),
@@ -112,7 +114,9 @@ class TestSignTxDecred(unittest.TestCase):
             TxRequest(
                 request_type=TXINPUT,
                 details=TxRequestDetailsType(request_index=0, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("60cc05000000000000001976a914664b0cd46741a695a38f8ed37db2a20327471beb88ac0000000000000000")
+                ),
             ),
             TxAckInput(tx=TxAckInputWrapper(input=inp1)),
             TxRequest(
@@ -162,7 +166,9 @@ class TestSignTxDecred(unittest.TestCase):
             TxRequest(
                 request_type=TXINPUT,
                 details=TxRequestDetailsType(request_index=0, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("01")
+                ),
             ),
             TxAckInput(tx=TxAckInputWrapper(input=inp1)),
             TxRequest(
@@ -173,6 +179,7 @@ class TestSignTxDecred(unittest.TestCase):
                     signature=unhexlify(
                         "3044022078a5c388838796562eb9dad176b00e6d9425bc360083f633a14948685ca8a5ce02202a1b49cd44104a9d40aee8f988281a8aac94a497b5bc7337c77cc7ddbab16f23"
                     ),
+                    serialized_tx=unhexlify("70f305000000000000000000ffffffff6a473044022078a5c388838796562eb9dad176b00e6d9425bc360083f633a14948685ca8a5ce02202a1b49cd44104a9d40aee8f988281a8aac94a497b5bc7337c77cc7ddbab16f23012103fc15aa2f684457332c0ef1fe44d908ab97208102a1792caa13bcc5e886c4b321"),
                 ),
             ),
         ]
@@ -191,12 +198,6 @@ class TestSignTxDecred(unittest.TestCase):
             if isinstance(res, tuple):
                 _, res = res
 
-            if isinstance(res, TxRequest):
-                res.serialized.serialized_tx = bytearray(res.serialized.serialized_tx)
-                if not res.serialized.serialized_tx:
-                    res.serialized.serialized_tx = bytearray(0)
-                if not response.serialized.serialized_tx:
-                    response.serialized.serialized_tx = bytearray(0)
             self.assertEqual(res, response)
 
         with self.assertRaises(StopIteration):
@@ -251,7 +252,9 @@ class TestSignTxDecred(unittest.TestCase):
             TxRequest(
                 request_type=TXOUTPUT,
                 details=TxRequestDetailsType(request_index=0, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("4ac247307a054c37525169a78d690a7a7f87d709bef7d722aae85584f59c8fdf0000000000ffffffff03")
+                ),
             ),
             TxAckOutput(tx=TxAckOutputWrapper(output=out1)),
             helpers.UiConfirmDecredSSTXSubmission(out1, coin_decred, AmountUnit.BITCOIN),
@@ -259,13 +262,17 @@ class TestSignTxDecred(unittest.TestCase):
             TxRequest(
                 request_type=TXOUTPUT,
                 details=TxRequestDetailsType(request_index=1, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("60cc05000000000000001aba76a914664b0cd46741a695a38f8ed37db2a20327471beb88ac")
+                ),
             ),
             TxAckOutput(tx=TxAckOutputWrapper(output=out2)),
             TxRequest(
                 request_type=TXOUTPUT,
                 details=TxRequestDetailsType(request_index=2, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("00000000000000000000206a1e762e46655536d93ad13f88a49bde9a2df45fe62e70f30500000000000058")
+                ),
             ),
             TxAckOutput(tx=TxAckOutputWrapper(output=out3)),
             helpers.UiConfirmTotal(380000 + 10000, 10000, coin_decred, AmountUnit.BITCOIN),
@@ -273,7 +280,9 @@ class TestSignTxDecred(unittest.TestCase):
             TxRequest(
                 request_type=TXINPUT,
                 details=TxRequestDetailsType(request_index=0, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("000000000000000000001abd76a914000000000000000000000000000000000000000088ac0000000000000000")
+                ),
             ),
             TxAckInput(tx=TxAckInputWrapper(input=inp1)),
             TxRequest(
@@ -323,7 +332,9 @@ class TestSignTxDecred(unittest.TestCase):
             TxRequest(
                 request_type=TXINPUT,
                 details=TxRequestDetailsType(request_index=0, tx_hash=None),
-                serialized=EMPTY_SERIALIZED,
+                serialized=TxRequestSerializedType(
+                    serialized_tx=unhexlify("01")
+                ),
             ),
             TxAckInput(tx=TxAckInputWrapper(input=inp1)),
             TxRequest(
@@ -334,6 +345,7 @@ class TestSignTxDecred(unittest.TestCase):
                     signature=unhexlify(
                         "3045022100d2a6baadc88ea67ec94a1f6dca70882e647e9af68d24e1bc72f9c27359e5e6ff02207b8a939e7cf82e79e2947e8fe59a14c11ee0b3a9cd1ff084d9bd54e23291b6be"
                     ),
+                    serialized_tx=unhexlify("70f305000000000000000000ffffffff6b483045022100d2a6baadc88ea67ec94a1f6dca70882e647e9af68d24e1bc72f9c27359e5e6ff02207b8a939e7cf82e79e2947e8fe59a14c11ee0b3a9cd1ff084d9bd54e23291b6be012103fc15aa2f684457332c0ef1fe44d908ab97208102a1792caa13bcc5e886c4b321")
                 ),
             ),
         ]
@@ -351,13 +363,6 @@ class TestSignTxDecred(unittest.TestCase):
             res = signer.send(request)
             if isinstance(res, tuple):
                 _, res = res
-
-            if isinstance(res, TxRequest):
-                res.serialized.serialized_tx = bytearray(res.serialized.serialized_tx)
-                if not res.serialized.serialized_tx:
-                    res.serialized.serialized_tx = bytearray(0)
-                if not response.serialized.serialized_tx:
-                    response.serialized.serialized_tx = bytearray(0)
 
             self.assertEqual(res, response)
 

@@ -154,8 +154,15 @@ def pkh_from_sstxcommitment(s: bytes) -> Tuple[bytes, int]:
     utils.ensure(len(s) == 30)
     r = BufferReader(s)
     pkh = r.read(20)
+
+    # If the highest bit of the amount is set, then the hash is for a
+    # pay-to-script-hash, otherwise the hash is a pay-to-pubkey-hash.
     amount = read_uint64_le(r)
+    if amount & 0x8000_0000_0000_0000:
+        raise wire.DataError("Unsupported hash type in commitment.")
+
     # Ensure fee limits are standard.
     if r.read() != b"\x00\x58":
         raise wire.DataError("Commitment fee limits are not default.")
+
     return pkh, amount

@@ -51,6 +51,8 @@ TXHASH_1f00fc = bytes.fromhex(
     "1f00fc54530d7c4877f5032e91b6c507f6a1531861dede2ab134e5c0b5dfe8c8"
 )
 
+pytestmark = [pytest.mark.skip_t1]
+
 
 @pytest.mark.altcoin
 @pytest.mark.decred

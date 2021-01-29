@@ -248,24 +248,24 @@ class Decred(Bitcoin):
         if self.tx_info.tx.outputs_count != 3:
             raise wire.DataError("Ticket has wrong number of outputs.")
 
-        def writeIt(txo: TxOutput, script_pubkey: bytes) -> None:
+        def write_output(txo: TxOutput, script_pubkey: bytes) -> None:
             self.tx_info.add_output(txo, script_pubkey)
             self.write_tx_output(self.serialized_tx, txo, script_pubkey)
 
         txo = await helpers.request_tx_output(self.tx_req, 0, self.coin)
         script_pubkey = self.validate_sstx_submission(txo)
         await self.approver.add_decred_sstx_submission(txo, script_pubkey)
-        writeIt(txo, script_pubkey)
+        write_output(txo, script_pubkey)
 
         txo = await helpers.request_decred_commitment_output(self.tx_req, 1, self.coin)
         script_pubkey = self.validate_sstx_commitment_owned(txo)
         self.approver.add_change_output(txo, script_pubkey)
-        writeIt(txo, script_pubkey)
+        write_output(txo, script_pubkey)
 
         txo = await helpers.request_tx_output(self.tx_req, 2, self.coin)
         script_pubkey = self.validate_sstx_change(txo)
         self.approver.add_change_output(txo, script_pubkey)
-        writeIt(txo, script_pubkey)
+        write_output(txo, script_pubkey)
 
     def write_tx_header(
         self,
