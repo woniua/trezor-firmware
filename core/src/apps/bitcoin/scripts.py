@@ -396,8 +396,7 @@ def input_script_multisig(
     redeem_script_length = output_script_multisig_length(pubkeys, multisig.m)
 
     # length of the result
-    total_length = 0
-    total_length += 1  # OP_FALSE
+    total_length = 1  # OP_FALSE
     for s in signatures:
         total_length += 1 + len(s) + 1  # length, signature, hash_type
     total_length += 1 + redeem_script_length  # length, script
