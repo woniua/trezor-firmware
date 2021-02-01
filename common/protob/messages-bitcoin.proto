@@ -23,12 +23,12 @@ enum InputScriptType {
  * Type of script which will be used for transaction output
  */
 enum OutputScriptType {
-    PAYTOADDRESS = 0;         // used for all addresses (bitcoin, p2sh, witness)
-    PAYTOSCRIPTHASH = 1;      // p2sh address (deprecated; use PAYTOADDRESS)
-    PAYTOMULTISIG = 2;        // only for change output
-    PAYTOOPRETURN = 3;        // op_return
-    PAYTOWITNESS = 4;         // only for change output
-    PAYTOP2SHWITNESS = 5;     // only for change output
+    PAYTOADDRESS = 0;       // used for all addresses (bitcoin, p2sh, witness)
+    PAYTOSCRIPTHASH = 1;    // p2sh address (deprecated; use PAYTOADDRESS)
+    PAYTOMULTISIG = 2;      // only for change output
+    PAYTOOPRETURN = 3;      // op_return
+    PAYTOWITNESS = 4;       // only for change output
+    PAYTOP2SHWITNESS = 5;   // only for change output
 }
 
 /**
