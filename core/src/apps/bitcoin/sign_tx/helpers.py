@@ -390,9 +390,6 @@ def sanitize_tx_input(txi: TxInput, coin: CoinInfo) -> TxInput:
     if txi.address_n and txi.script_type not in common.INTERNAL_INPUT_SCRIPT_TYPES:
         raise wire.DataError("Input's address_n provided but not expected.")
 
-    if coin.decred and txi.script_type not in common.DECRED_INPUT_SCRIPT_TYPES:
-        raise wire.DataError("Invalid script type.")
-
     if not coin.decred and txi.decred_tree is not None:
         raise wire.DataError("Decred details provided but Decred coin not specified.")
 
@@ -442,14 +439,15 @@ def sanitize_tx_output(txo: TxOutput, coin: CoinInfo) -> TxOutput:
     if not txo.multisig and txo.script_type == OutputScriptType.PAYTOMULTISIG:
         raise wire.DataError("Multisig details required.")
 
-    if coin.decred and txo.script_type not in common.DECRED_OUTPUT_SCRIPT_TYPES:
-        raise wire.DataError("Invalid script type.")
-
     if txo.address_n and txo.script_type not in common.CHANGE_OUTPUT_SCRIPT_TYPES:
         raise wire.DataError("Output's address_n provided but not expected.")
 
     if txo.amount is None:
         raise wire.DataError("Missing amount field.")
+
+    if txo.script_type in common.SEGWIT_OUTPUT_SCRIPT_TYPES:
+        if not coin.segwit:
+            raise wire.DataError("Segwit not enabled on this coin.")
 
     if txo.script_type == OutputScriptType.PAYTOOPRETURN:
         # op_return output
