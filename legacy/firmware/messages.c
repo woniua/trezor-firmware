@@ -335,15 +335,18 @@ _Static_assert(USB_PACKET_SIZE >= MSG_HEADER_SIZE + DebugLinkGetState_size,
 uint16_t msg_tiny_id = 0xFFFF;
 
 void msg_read_tiny(const uint8_t *buf, int len) {
-  if (len != USB_PACKET_SIZE) return;
-  if (buf[0] != '?' || buf[1] != '#' || buf[2] != '#') {
-    return;
+  if (len != USB_PACKET_SIZE || buf[0] != '?' || buf[1] != '#' ||
+      buf[2] != '#') {
+    fsm_sendFailure(FailureType_Failure_UnexpectedMessage,
+                    _("Unknown message"));
+    msg_tiny_id = 0xFFFF;
   }
   uint16_t msg_id = (buf[3] << 8) + buf[4];
   uint32_t msg_size =
       ((uint32_t)buf[5] << 24) + (buf[6] << 16) + (buf[7] << 8) + buf[8];
   if (msg_size > USB_PACKET_SIZE || len - msg_size < MSG_HEADER_SIZE) {
-    return;
+    fsm_sendFailure(FailureType_Failure_DataError, _("Invalid message length"));
+    msg_tiny_id = 0xFFFF;
   }
 
   const pb_msgdesc_t *fields = 0;
