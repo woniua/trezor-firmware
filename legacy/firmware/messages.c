@@ -378,7 +378,9 @@ void msg_read_tiny(const uint8_t *buf, int len) {
 
   uint32_t msg_size =
       ((uint32_t)buf[5] << 24) + (buf[6] << 16) + (buf[7] << 8) + buf[8];
-  if (msg_size > sizeof(msg_tiny) / 2 || msg_size > len - MSG_HEADER_SIZE) {
+
+  if (msg_size > sizeof(msg_tiny) / 2 ||
+      msg_size > (uint32_t)len - MSG_HEADER_SIZE) {
     // There is a risk that the struct decoded from the message won't fit into
     // msg_tiny or the encoded message does not fit into the buffer. The first
     // is a fail-safe in case of a forgotten _Static_assert above.
