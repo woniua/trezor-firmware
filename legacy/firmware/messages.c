@@ -306,6 +306,9 @@ const uint8_t *msg_debug_out_data(void) {
 
 #endif
 
+// msg_tiny needs to be large enough to hold the C struct decoded from a single
+// 64 byte USB packet. The decoded struct can be larger than the encoded
+// protobuf message. However, 128 bytes should be more than enough.
 CONFIDENTIAL uint8_t msg_tiny[128];
 _Static_assert(sizeof(msg_tiny) >= sizeof(Cancel), "msg_tiny too tiny");
 _Static_assert(USB_PACKET_SIZE >= MSG_HEADER_SIZE + Cancel_size,
@@ -337,21 +340,13 @@ uint16_t msg_tiny_id = 0xFFFF;
 void msg_read_tiny(const uint8_t *buf, int len) {
   if (len != USB_PACKET_SIZE || buf[0] != '?' || buf[1] != '#' ||
       buf[2] != '#') {
-    fsm_sendFailure(FailureType_Failure_UnexpectedMessage,
-                    _("Unknown message"));
-    msg_tiny_id = 0xFFFF;
+    // Ignore unexpected messages. This is helpful when two applications are
+    // attempting to communicate with Trezor at the same time.
+    return;
   }
+
+  const pb_msgdesc_t *fields = NULL;
   uint16_t msg_id = (buf[3] << 8) + buf[4];
-  uint32_t msg_size =
-      ((uint32_t)buf[5] << 24) + (buf[6] << 16) + (buf[7] << 8) + buf[8];
-  if (msg_size > USB_PACKET_SIZE || len - msg_size < MSG_HEADER_SIZE) {
-    fsm_sendFailure(FailureType_Failure_DataError, _("Invalid message length"));
-    msg_tiny_id = 0xFFFF;
-  }
-
-  const pb_msgdesc_t *fields = 0;
-  pb_istream_t stream = pb_istream_from_buffer(buf + MSG_HEADER_SIZE, msg_size);
-
   switch (msg_id) {
     case MessageType_MessageType_PinMatrixAck:
       fields = PinMatrixAck_fields;
@@ -376,18 +371,28 @@ void msg_read_tiny(const uint8_t *buf, int len) {
       fields = DebugLinkGetState_fields;
       break;
 #endif
+    default:
+      // Ignore unexpected messages.
+      return;
   }
-  if (fields) {
-    bool status = pb_decode(&stream, fields, msg_tiny);
-    if (status) {
-      msg_tiny_id = msg_id;
-    } else {
-      fsm_sendFailure(FailureType_Failure_DataError, stream.errmsg);
-      msg_tiny_id = 0xFFFF;
-    }
+
+  uint32_t msg_size =
+      ((uint32_t)buf[5] << 24) + (buf[6] << 16) + (buf[7] << 8) + buf[8];
+  if (msg_size > sizeof(msg_tiny) / 2 || msg_size > len - MSG_HEADER_SIZE) {
+    // There is a risk that the struct decoded from the message won't fit into
+    // msg_tiny or the encoded message does not fit into the buffer. The first
+    // is a fail-safe in case of a forgotten _Static_assert above.
+    fsm_sendFailure(FailureType_Failure_DataError, _("Message too big"));
+    msg_tiny_id = 0xFFFF;
+    return;
+  }
+
+  pb_istream_t stream = pb_istream_from_buffer(buf + MSG_HEADER_SIZE, msg_size);
+  bool status = pb_decode(&stream, fields, msg_tiny);
+  if (status) {
+    msg_tiny_id = msg_id;
   } else {
-    fsm_sendFailure(FailureType_Failure_UnexpectedMessage,
-                    _("Unknown message"));
+    fsm_sendFailure(FailureType_Failure_DataError, stream.errmsg);
     msg_tiny_id = 0xFFFF;
   }
 }
